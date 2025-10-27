@@ -1,0 +1,93 @@
+{
+	"info": {
+		"name": "Employee Service API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Crear Empleado",
+			"request": {
+				"method": "POST",
+				"url": {
+					"raw": "http://localhost:3307/employees",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "3307",
+					"path": ["employees"]
+				},
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Juan\",\n    \"lastName\": \"Pérez\",\n    \"phone\": \"1234567890\",\n    \"email\": \"juan.perez@example.com\",\n    \"rol\": \"admin\",\n    \"incomeDate\": \"2025-10-27T00:00:00.000Z\",\n    \"username\": \"jperez\",\n    \"password\": \"password123\"\n}"
+				}
+			}
+		},
+		{
+			"name": "Obtener Todos los Empleados",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://localhost:3307/employees",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "3307",
+					"path": ["employees"]
+				}
+			}
+		},
+		{
+			"name": "Obtener Empleado por ID",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://localhost:3307/employees/1",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "3307",
+					"path": ["employees", "1"]
+				}
+			}
+		},
+		{
+			"name": "Actualizar Empleado",
+			"request": {
+				"method": "PUT",
+				"url": {
+					"raw": "http://localhost:3307/employees/1",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "3307",
+					"path": ["employees", "1"]
+				},
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Juan Actualizado\",\n    \"lastName\": \"Pérez Actualizado\",\n    \"phone\": \"9876543210\"\n}"
+				}
+			}
+		},
+		{
+			"name": "Eliminar Empleado",
+			"request": {
+				"method": "DELETE",
+				"url": {
+					"raw": "http://localhost:3307/employees/1",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "3307",
+					"path": ["employees", "1"]
+				}
+			}
+		}
+	]
+}
