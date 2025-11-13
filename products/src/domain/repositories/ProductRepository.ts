@@ -1,8 +1,8 @@
 import { Product } from "../models/Product";
 
-export interface ProductRepository{
-save(product: Product): Product;
-findAll():Product[];
-getByID(id: number):Product| null;
-updateQuantity(product: Product):void;
+export interface ProductRepository {
+  save(product: Product): Promise<Product>;
+  findAll(): Promise<Product[]>;
+  getByID(id: number): Promise<Product | null>;
+  updateQuantity(product: Product): Promise<void>;
 }

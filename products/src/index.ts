@@ -1,3 +1,3 @@
-import { startServer } from "./infraestructure/web/server";
+import {boostrap} from "../src/app/main"
 
-startServer();
+boostrap();

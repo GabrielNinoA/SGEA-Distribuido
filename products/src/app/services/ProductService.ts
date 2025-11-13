@@ -16,17 +16,17 @@ export class ProductService{
         this.getById = new GetByID(repo);
         this.addQuantity = new AddProductQuantity(repo);
     }
-    registrarProducto(data:any){
-        return this.createProduct.execute(data);
+    async registrarProducto(data:any){
+        return await this.createProduct.execute(data);
     }
-    getProducts(){
-        return this.getAllProducts.execute(); 
+    async getProducts(){
+        return await this.getAllProducts.execute(); 
     }
-    getByID(id: number){
-        return this.getById.execute(id);
+    async getByID(id: number){
+        return await this.getById.execute(id);
     }
-    addQuantityProduct(id: number, cantidad: number){
-        return this.addQuantity.execute(id, cantidad);
+    async addQuantityProduct(id: number, cantidad: number){
+        return await this.addQuantity.execute(id, cantidad);
     }
     
 }

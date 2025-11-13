@@ -1,13 +1,14 @@
 import express from "express";
 import ProductRoutes from "./routes/ProductRoutes";
-const app = express();
-const PORT  = 7674;
+import { ProductService } from "../../app/services/ProductService";
 
-app.use(express.json());
-app.use("/products", ProductRoutes);
+export const startServer = (productService : ProductService) => {
+    const app = express();
+    const PORT  = 7674;
+    app.use(express.json());
 
-export const startServer = () => {
+    app.use("/products", ProductRoutes(productService));
     app.listen(PORT, ()=> {
-         console.log(`🚀 Microservicio de productos corriendo en http://localhost:${PORT}`);
+         console.log(`Microservicio de productos corriendo en http://localhost:${PORT}`);
     })
 }
