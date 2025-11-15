@@ -1,13 +1,10 @@
 
 export interface Employee {
-    id: number;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    rol: string;
-    incomeDate: Date;
-    isActive: boolean;
-    username: string;
-    password: string;
+    id_empleado: number;
+    id_usuario: number;
+    nombre: string;
+    documento: string;
+    estado: 'ACTIVO' | 'INACTIVO';
+    fecha_ingreso: Date;
+    salario: number;
 }

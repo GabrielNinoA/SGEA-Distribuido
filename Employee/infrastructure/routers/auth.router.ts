@@ -1,15 +1,15 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { AuthMiddleware } from '../middleware/auth.middleware';
 
 export const createAuthRouter = () => {
     const router = Router();
 
     // Ruta de prueba para generar un token
-    router.post('/generate-test-token', (req, res) => {
+    router.post('/generate-test-token', (req: Request, res: Response) => {
         const testUser = {
-            id: 1,
-            username: "test.user",
-            rol: "admin"
+            id_usuario: 1,
+            nickname: "test.user",
+            rol: "ADMIN" as const
         };
 
         const token = AuthMiddleware.generateToken(testUser);

@@ -1,28 +1,30 @@
+import 'reflect-metadata';
+import dotenv from 'dotenv';
+
+// Cargar variables de entorno
+dotenv.config();
+
 import express from 'express';
-import { createEmployeeRouter } from './infrastructure/routers/employee.router';
-import { createAuthRouter } from './infrastructure/routers/auth.router';
-import { EmployeeRepositoryImpl } from './infrastructure/repositories/employee.repository.impl';
-import { EmployeeUseCase } from './application/usecases/employee.usecase';
-import { EmployeeController } from './infrastructure/controllers/employee.controller';
+import { AppDataSource } from './infrastructure/database/data-source';
+import { setupRoutes } from './app';
 
 const app = express();
-const port = 3307;
+const port = parseInt(process.env.PORT || '3307', 10);
 
-// Middleware para parsear JSON
-app.use(express.json());
+// Inicializar TypeORM y luego iniciar el servidor
+AppDataSource.initialize()
+    .then(() => {
+        console.log('Database connection established');
 
-// Configuración del router de empleados
-const employeeRepository = new EmployeeRepositoryImpl();
-const employeeUseCase = new EmployeeUseCase(employeeRepository);
-const employeeController = new EmployeeController(employeeUseCase);
-const employeeRouter = createEmployeeRouter(employeeController);
-const authRouter = createAuthRouter();
+        // Configurar rutas
+        setupRoutes(app, AppDataSource);
 
-// Rutas
-app.use('/auth', authRouter);
-app.use('/employees', employeeRouter);
-
-// Iniciar el servidor
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-});
+        // Iniciar el servidor
+        app.listen(port, () => {
+            console.log(`Server is running at http://localhost:${port}`);
+        });
+    })
+    .catch(error => {
+        console.error('Error during Data Source initialization:', error);
+        process.exit(1);
+    });

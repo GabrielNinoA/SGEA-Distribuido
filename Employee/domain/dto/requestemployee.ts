@@ -1,10 +1,8 @@
 export interface RequestEmployee {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-    rol: string;
-    incomeDate: Date;
-    username: string;
+    nombre: string;
+    documento: string;
+    fecha_ingreso: Date;
+    salario: number;
+    nickname: string;
     password: string;
 }

@@ -5,15 +5,15 @@ import jwt from 'jsonwebtoken';
 declare global {
     namespace Express {
         interface Request {
-            user?: any;
+            user?: TokenPayload;
         }
     }
 }
 
 export interface TokenPayload {
-    id: number;
-    username: string;
-    rol: string;
+    id_usuario: number;
+    nickname: string;
+    rol: 'ADMIN' | 'EMPLE';
     iat?: number;
     exp?: number;
 }
@@ -21,18 +21,20 @@ export interface TokenPayload {
 export class AuthMiddleware {
     private static readonly JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-    static verifyToken(req: Request, res: Response, next: NextFunction) {
+    static verifyToken(req: Request, res: Response, next: NextFunction): void {
         try {
             // Obtener el token del header
             const authHeader = req.headers.authorization;
             if (!authHeader) {
-                return res.status(401).json({ message: 'No token provided' });
+                res.status(401).json({ message: 'No token provided' });
+                return;
             }
 
             // Verificar el formato del token
             const parts = authHeader.split(' ');
             if (parts.length !== 2 || parts[0] !== 'Bearer') {
-                return res.status(401).json({ message: 'Token error' });
+                res.status(401).json({ message: 'Token error' });
+                return;
             }
 
             const token = parts[1];
@@ -53,37 +55,39 @@ export class AuthMiddleware {
                 res.setHeader('X-New-Token', newToken);
             }
 
-            return next();
+            next();
         } catch (error) {
             if (error instanceof jwt.TokenExpiredError) {
-                return res.status(401).json({ message: 'Token expired' });
+                res.status(401).json({ message: 'Token expired' });
+            } else if (error instanceof jwt.JsonWebTokenError) {
+                res.status(401).json({ message: 'Invalid token' });
+            } else {
+                res.status(500).json({ message: 'Internal server error' });
             }
-            if (error instanceof jwt.JsonWebTokenError) {
-                return res.status(401).json({ message: 'Invalid token' });
-            }
-            return res.status(500).json({ message: 'Internal server error' });
         }
     }
 
-    static checkRole(allowedRoles: string[]) {
-        return (req: Request, res: Response, next: NextFunction) => {
+    static checkRole(allowedRoles: ('ADMIN' | 'EMPLE')[]) {
+        return (req: Request, res: Response, next: NextFunction): void => {
             try {
                 if (!req.user) {
-                    return res.status(401).json({ message: 'Authentication required' });
+                    res.status(401).json({ message: 'Authentication required' });
+                    return;
                 }
 
                 const userRole = req.user.rol;
                 if (!allowedRoles.includes(userRole)) {
-                    return res.status(403).json({ 
+                    res.status(403).json({ 
                         message: 'Access denied',
                         required: allowedRoles,
                         current: userRole
                     });
+                    return;
                 }
 
                 next();
             } catch (error) {
-                return res.status(500).json({ message: 'Internal server error' });
+                res.status(500).json({ message: 'Internal server error' });
             }
         };
     }
@@ -95,30 +99,32 @@ export class AuthMiddleware {
     }
 
     // Middleware para rutas públicas que opcionalmente pueden tener un token
-    static optionalAuth(req: Request, res: Response, next: NextFunction) {
+    static optionalAuth(req: Request, res: Response, next: NextFunction): void {
         try {
             const authHeader = req.headers.authorization;
             if (!authHeader) {
-                return next();
+                next();
+                return;
             }
 
             const parts = authHeader.split(' ');
             if (parts.length !== 2 || parts[0] !== 'Bearer') {
-                return next();
+                next();
+                return;
             }
 
             const token = parts[1];
             const decoded = jwt.verify(token, AuthMiddleware.JWT_SECRET) as TokenPayload;
             req.user = decoded;
-            return next();
+            next();
         } catch (error) {
             // Si hay algún error con el token, simplemente continuamos sin autenticar
-            return next();
+            next();
         }
     }
 
     // Middleware para registrar los intentos de autenticación
-    static logAuth(req: Request, res: Response, next: NextFunction) {
+    static logAuth(req: Request, res: Response, next: NextFunction): void {
         const timestamp = new Date().toISOString();
         const method = req.method;
         const path = req.path;
@@ -132,7 +138,8 @@ export class AuthMiddleware {
             path,
             ip,
             userAgent,
-            user: req.user?.username || 'anonymous',
+            user: req.user?.nickname || 'anonymous',
+            rol: req.user?.rol || 'none',
             success: !!req.user
         }));
 
